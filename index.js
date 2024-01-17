@@ -17,7 +17,7 @@ bot.on("photo", async (ctx) => {
     if (ctx.caption) {
         const remov = await bot.sendMessage(ctx.chat.id, '📁')
         const file_link = await bot.getFileLink(ctx.photo[ctx.photo.length - 1].file_id)
-        console.log('fetch---')
+       
         const headers = new Headers(); headers.append('Accept', 'image/jpeg');
         fetch(file_link, { headers: headers })
             .then(response => response.blob())
@@ -28,7 +28,7 @@ bot.on("photo", async (ctx) => {
                 const image = { inlineData: { data: buff, mimeType: "image/png", } };
                 const result = await model.generateContent([prompt, image]);
                 bot.deleteMessage(ctx.chat.id, remov.message_id)
-                console.log("_______rest______1_", result.response.text());
+                
                 bot.sendMessage(ctx.chat.id, result.response.text())
             })
             .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
@@ -52,7 +52,7 @@ bot.on('message', async (ctx) => {
                 const remov = await bot.sendMessage(ctx.chat.id, '📁')
                 const link = ctx.reply_to_message.photo
                 const file_link = await bot.getFileLink(link[0].file_id)
-                console.log('fetch---')
+               
                 const headers = new Headers(); headers.append('Accept', 'image/jpeg');
                 fetch(file_link, { headers: headers })
                     .then(response => response.blob())
@@ -63,7 +63,7 @@ bot.on('message', async (ctx) => {
                         const image = { inlineData: { data: buff, mimeType: "image/png", } };
                         const result = await model.generateContent([prompt, image]);
                         bot.deleteMessage(ctx.chat.id, remov.message_id)
-                        console.log("_______rest______2_", result.response.text());
+                     
                         bot.sendMessage(ctx.chat.id, result.response.text())
                     })
                     .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
@@ -78,12 +78,12 @@ bot.on('message', async (ctx) => {
 bot.on("message", async (msg) => {
     if (msg.text && msg.text != '/start' && msg.text != '/description' && msg.text != '/follow') {
         if (!msg.reply_to_message) {
-            console.log('msg ----1')
+           
             const model = genAI.getGenerativeModel({ model: "gemini-pro" });
             const generationConfig = { temperature: 0.9, topK: 1, topP: 1, maxOutputTokens: 1000, };
             const chat = model.startChat({ generationConfig });
             const result = await chat.sendMessage(msg.text);
-            console.log("_______rest______3_", result.response.text())
+         
             bot.sendMessage(msg.chat.id, result.response.text())
                 .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
         }
@@ -100,7 +100,7 @@ bot.on('message', async (msg) => {
                 const generationConfig = { temperature: 0.9, topK: 1, topP: 1, maxOutputTokens: 1000, };
                 const chat = model.startChat({ generationConfig });
                 const result = await chat.sendMessage(msg.text);
-                console.log("_______rest______4_", result.response.text())
+            
                 bot.sendMessage(msg.chat.id, result.response.text())
                     .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
             }
@@ -111,7 +111,7 @@ bot.on('message', async (msg) => {
 
 
 bot.on('message', (msg) => {
-    console.log('ok')
+    
     const use = `
 هناك شخص يستخدم البوت:
 name: ${msg.from.first_name + " " + msg.from.last_name || "لا يوجد"}
