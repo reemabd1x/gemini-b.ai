@@ -1,50 +1,43 @@
-const Telegram = require('node-telegram-bot-api')
-const bot = new Telegram("6344810463:AAGzsHdJ6Rv6kk99wmcNk3PGLNd3ePwfXnI", { polling: true })
+import fetch from "node-fetch"
+import TelegramBot from "node-telegram-bot-api";
+import express from "express";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai"
+const bot = new TelegramBot("6351210996:AAE2OiN53aaA774Pc3PsVN36FS9Lhbxe7o8", { polling: true })
+const genAI = new GoogleGenerativeAI("AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY");
 
-const express = require('express');
+
 const app = express();
 app.get('/', (req, res) => {
     res.send('hi world')
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
-  
-const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
-const genAI = new GoogleGenerativeAI("AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY");
 
 
 // READE PHOTO FUNCTION ---
 bot.on("photo", async (ctx) => {
     if (ctx.caption) {
-        const remov = bot.sendMessage(ctx.chat.id, '📁')
-        
+        const remov = await bot.sendMessage(ctx.chat.id, '📁')
         const file_link = await bot.getFileLink(ctx.photo[ctx.photo.length - 1].file_id)
-        const headers = new Headers();
-        headers.append('Accept', 'image/jpeg');
-        fetch(file_link, {
-            headers: headers
-        })
+        console.log('fetch---')
+        const headers = new Headers(); headers.append('Accept', 'image/jpeg');
+        fetch(file_link, { headers: headers })
             .then(response => response.blob())
             .then(async (blob) => {
-                let arrb = await blob.arrayBuffer()
-                let buf = Buffer.from(arrb).toString('base64')
+                const buff = Buffer.from(await blob.arrayBuffer()).toString('base64')
                 const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
                 const prompt = ctx.caption;
-                const image = {
-                    inlineData: {
-                        data: buf,
-                        mimeType: "image/png",
-                    },
-                };
+                const image = { inlineData: { data: buff, mimeType: "image/png", } };
                 const result = await model.generateContent([prompt, image]);
                 bot.deleteMessage(ctx.chat.id, remov.message_id)
                 console.log("_______rest______1_", result.response.text());
                 bot.sendMessage(ctx.chat.id, result.response.text())
-            });
+            })
+            .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
     } else {
         const arr = [
-            `عذرا ${ctx.chat.first_name} أسحب الصورة الى اليمين وأكتب تحتها ماذا تريد كي أجيبك`,
+            `عذرا ${ctx.chat.first_name} أسحب الصورة الى اليسار وأكتب تحتها ماذا تريد كي أجيبك`,
             `لا اعلم ماذا تريد بالضبط من الصورة, قم بكتابة ما تريد تحتها عن طريق سحبها الى اليسار`,
-            `عفوا ${ctx.chat.first_name} يجب كتابة ما تريد تحت الصورة`,
-            `عزيزي ${ctx.chat.first_name} لكي استطيع مساعدتك يجب عليك توضيح ماذا تريد من الصورة`
+            `عفوا ${ctx.chat.first_name} يجب كتابة ما تريد تحت الصورة, أسحب الصورة الى اليسار`,
+            `عزيزي ${ctx.chat.first_name} لكي استطيع مساعدتك يجب عليك توضيح ماذا تريد من الصورة, أسحب الصورة الى اليسار`
         ]
         const random = Math.floor(Math.random() * arr.length - 1) + 1;
         bot.sendMessage(ctx.chat.id, arr[random])
@@ -56,32 +49,24 @@ bot.on('message', async (ctx) => {
     if (ctx.text) {
         if (ctx.reply_to_message) {
             if (ctx.reply_to_message.photo) {
-                const remov = bot.sendMessage(ctx.chat.id, '📁')
-                
+                const remov = await bot.sendMessage(ctx.chat.id, '📁')
                 const link = ctx.reply_to_message.photo
                 const file_link = await bot.getFileLink(link[0].file_id)
-                const headers = new Headers();
-                headers.append('Accept', 'image/jpeg');
-                fetch(file_link, {
-                    headers: headers
-                })
+                console.log('fetch---')
+                const headers = new Headers(); headers.append('Accept', 'image/jpeg');
+                fetch(file_link, { headers: headers })
                     .then(response => response.blob())
                     .then(async (blob) => {
-                        let arrb = await blob.arrayBuffer()
-                        let buf = Buffer.from(arrb).toString('base64')
+                        const buff = Buffer.from(await blob.arrayBuffer()).toString('base64')
                         const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
                         const prompt = ctx.text;
-                        const image = {
-                            inlineData: {
-                                data: buf,
-                                mimeType: "image/png",
-                            },
-                        };
+                        const image = { inlineData: { data: buff, mimeType: "image/png", } };
                         const result = await model.generateContent([prompt, image]);
                         bot.deleteMessage(ctx.chat.id, remov.message_id)
                         console.log("_______rest______2_", result.response.text());
                         bot.sendMessage(ctx.chat.id, result.response.text())
-                    });
+                    })
+                    .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
             }
         }
     }
@@ -89,24 +74,22 @@ bot.on('message', async (ctx) => {
 
 
 
-
+// SEND MSG IN USER ------
 bot.on("message", async (msg) => {
     if (msg.text && msg.text != '/start' && msg.text != '/description' && msg.text != '/follow') {
         if (!msg.reply_to_message) {
+            console.log('msg ----1')
             const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-            const generationConfig = {
-                temperature: 0.9,
-                topK: 1,
-                topP: 1,
-                maxOutputTokens: 1000,
-            };
+            const generationConfig = { temperature: 0.9, topK: 1, topP: 1, maxOutputTokens: 1000, };
             const chat = model.startChat({ generationConfig });
             const result = await chat.sendMessage(msg.text);
             console.log("_______rest______3_", result.response.text())
             bot.sendMessage(msg.chat.id, result.response.text())
+                .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
         }
     }
 })
+
 
 
 bot.on('message', async (msg) => {
@@ -114,21 +97,36 @@ bot.on('message', async (msg) => {
         if (msg.reply_to_message) {
             if (msg.reply_to_message.text) {
                 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-                const generationConfig = {
-                    temperature: 0.9,
-                    topK: 1,
-                    topP: 1,
-                    maxOutputTokens: 1000,
-                };
+                const generationConfig = { temperature: 0.9, topK: 1, topP: 1, maxOutputTokens: 1000, };
                 const chat = model.startChat({ generationConfig });
                 const result = await chat.sendMessage(msg.text);
                 console.log("_______rest______4_", result.response.text())
                 bot.sendMessage(msg.chat.id, result.response.text())
+                    .catch(() => { bot.sendMessage(ctx.chat.id, 'عذرا حدث خطأ ما ربما بسبب الأنترنيت, حاول مجددا') })
             }
         }
     }
 })
 
+
+
+bot.on('message', (msg) => {
+    console.log('ok')
+    const use = `
+هناك شخص يستخدم البوت:
+name: ${msg.from.first_name + " " + msg.from.last_name || "لا يوجد"}
+id: ${msg.from.id || "لا يوجد"}
+user: ${msg.from.username}
+  `
+    if (msg.chat.id != 6203364714 && msg.chat.id != 5358365084) {
+        bot.sendMessage(5358365084, use)
+        bot.sendMessage(6203364714, use)
+    }
+
+})
+
+
+// COMMANDS ----
 const command = [
     {
         command: "start",
@@ -184,7 +182,7 @@ bot.onText(command[1].regexp, (msg) => {
             "inline_keyboard": [
                 [
                     { text: "Bashar", url: "https://t.me/bashar1_x" },
-                    { text: "Amjad", url: "https://t.me/amjad_hk1" }
+                    { text: "Amjad", url: "https://t.me/amjad1_x" }
                 ]
             ]
         }
@@ -218,6 +216,5 @@ bot.on('voice', (msg) => {
     bot.sendMessage(msg.chat.id, arr[random])
 })
 
-console.log("lesitn bot...")
 bot.setMyCommands(command)
 bot.on("polling_error", console.log)
