@@ -110,20 +110,7 @@ bot.on('message', async (msg) => {
 
 
 
-bot.on('message', (msg) => {
-    
-    const use = `
-هناك شخص يستخدم البوت:
-name: ${msg.from.first_name + " " + msg.from.last_name || "لا يوجد"}
-id: ${msg.from.id || "لا يوجد"}
-user: ${msg.from.username}
-  `
-    if (msg.chat.id != 6203364714 && msg.chat.id != 5358365084) {
-        bot.sendMessage(5358365084, use)
-        bot.sendMessage(6203364714, use)
-    }
 
-})
 
 
 // COMMANDS ----
@@ -182,7 +169,7 @@ bot.onText(command[1].regexp, (msg) => {
             "inline_keyboard": [
                 [
                     { text: "Bashar", url: "https://t.me/bashar1_x" },
-                    { text: "Amjad", url: "https://t.me/amjad1_x" }
+                    { text: "Amjad", url: "https://t.me/amjad_kh1" }
                 ]
             ]
         }
