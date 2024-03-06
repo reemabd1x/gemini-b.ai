@@ -22,7 +22,7 @@ app.use(express.urlencoded())
 
 app.get('/', (req, res) => {
 
-    res.json({name: 'bashar'})
+    res.json({run: 'run bot'})
 
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 
 setInterval( async () => {
 
-const res = await fetch('https://node-tele.onrender.com/')
+const res = await fetch('https://gemini-b-ai.onrender.com/')
 
 },10 *1000)
 
@@ -624,7 +624,7 @@ bot.onText(command[3].regexp, (msg) => {
 
             // console.log(res)
 
-            bot.sendMessage(msg.chat.id, `المشتركين (${res})`)
+            bot.sendMessage(msg.chat.id, `.المشتركين (${res})`)
 
         })
 
