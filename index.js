@@ -34,7 +34,7 @@ setInterval( async () => {
 
 const res = await fetch('https://gemini-b-ai.onrender.com/')
 const data1 = await res.json()
-},10 *1000)
+},100 *1000)
 
 
 
