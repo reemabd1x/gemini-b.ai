@@ -32,9 +32,8 @@ app.get('/', (req, res) => {
 
 setInterval( async () => {
 
-const res = await fetch('https://gemini-b-ai.onrender.com/');
+const res = await fetch('https://gemini-b-ai.onrender.com/')
 const data1 = await res.json()
-bot.sendMessage(5358365084, data1)
 },10 *1000)
 
 
