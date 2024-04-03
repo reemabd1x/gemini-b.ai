@@ -3,7 +3,7 @@ import TelegramBot from "node-telegram-bot-api";
 import express from "express";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai"
 // CREATE CLASS AND FUNCTION
-const bot = new TelegramBot('6351210996:AAE2OiN53aaA774Pc3PsVN36FS9Lhbxe7o8', { polling: true });
+const bot = new TelegramBot('6344810463:AAGzsHdJ6Rv6kk99wmcNk3PGLNd3ePwfXnI', { polling: true });
 const genAI = new GoogleGenerativeAI('AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY');
 const app = express();
 app.use(express.json())
