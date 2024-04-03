@@ -3,14 +3,13 @@ import TelegramBot from "node-telegram-bot-api";
 import express from "express";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai"
 // CREATE CLASS AND FUNCTION
-const bot = new TelegramBot('6344810463:AAGzsHdJ6Rv6kk99wmcNk3PGLNd3ePwfXnI', { polling: true });
+const bot = new TelegramBot('6351210996:AAE2OiN53aaA774Pc3PsVN36FS9Lhbxe7o8', { polling: true });
 const genAI = new GoogleGenerativeAI('AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY');
 const app = express();
-
 app.use(express.json())
 app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run bot4' })
+    res.json({ run: 'run bot5' })
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
 // PING BOT ----
@@ -18,8 +17,8 @@ setInterval(async () => {
     const res = await fetch('https://gemini-b-ai.onrender.com/')
     const data1 = await res.json()
 }, 100 * 1000)
-
 console.log('bot is ready...')
+
 async function runText(prompt) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -30,7 +29,6 @@ async function runText(prompt) {
         return response
     } catch (err) { return 'err' }
 }
-
 async function runImage(prompt, urlImage) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
@@ -76,7 +74,7 @@ async function chatMember(id) {
 }
 // console.log( await chatMember(5358365084))
 const arr_what = ['من مطورك', 'من طورك', 'من صنعك', 'من برمجك', 'من اخترعك', 'منو سواك', 'منو اخترعك', 'منو صنعك', 'منو برمجك', 'منو طورك', 'من بشار']
-const arr_dev = ['بشار مرشد الحيوي', 'قام بتطويري بشار حيوي', 'بشار مرشد الحيوي القاطن في الرقة مزرعة ربيعة', 'مطوري بشار مرشد الحيوي']
+const arr_dev = ['بشار مرشد الحيوي', 'قام بتطويري بشار حيوي', 'بشار مرشد الحيوي القاطن في الرقة مزرعة ربيعة', 'مطوري بشار مرشد الحيوي', 'قام بإنشائي بشار وبمساعدة من  امجد الخلف']
 const arr_bad = ['مرحبا بك كيف حالك اليوم هل انت بحاجة الى مساعدة انا ذكاء اصطناعي قادر على مساعدتك', 'مرحبا انا نموذج ذكاء اصطناعي تم تطويري بواسطة بشار الحيوي', 'انا ذكاء اصطناعي تم تدريبي بواسطة بشار مرشد الحيوي']
 const err_msg = ['من فضلك حاول صياغة سؤالك بطريقة اخرى', 'اعتذر اني لم افهم سؤالك جيدا', 'يبدو الأتصال ضعيف حاول مجددا']
 const arr_command = ['/start', '/description', '/follow', '/admin']
@@ -86,17 +84,17 @@ bot.on('message', async (msg) => {
             if (!msg.reply_to_message) {
                 if (await chatMember(msg.chat.id) == 'ok') {
                     const result = await runText(msg.text)
+                    // console.log(result)
                     try {
                         if (!arr_what.includes(msg.text)) {
                             if (result == 'err') {
                                 bot.sendMessage(msg.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
                             } else {
-                                const bad = ['نموذج', 'لغوي', 'جوجل']
-                                if (!result.includes(bad[0]) && !result.includes(bad[1]) && !result.includes(bad[2])) {
+                                if (result.includes("نموذج") && result.includes("لغوي") && result.includes("جوجل")) {
+                                    bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
+                                } else {
                                     bot.sendMessage(msg.chat.id, result, { parse_mode: 'Markdown' })
                                     .catch(() => {bot.sendMessage(msg.chat.id, result)})
-                                } else {
-                                    bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
                                 }
                             }
                         } else {
@@ -108,17 +106,17 @@ bot.on('message', async (msg) => {
                 if (msg.reply_to_message.text) {
                     if (await chatMember(msg.chat.id) == 'ok') {
                         const result = await runText(msg.text)
+                        // console.log(result)
                         try {
                             if (!arr_what.includes(msg.text)) {
                                 if (result == 'err') {
                                     bot.sendMessage(msg.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
                                 } else {
-                                    const bad = ['نموذج', 'لغوي', 'جوجل']
-                                    if (!result.includes(bad[0]) && !result.includes(bad[1]) && !result.includes(bad[2])) {
+                                    if (result.includes("نموذج") && result.includes("لغوي") && result.includes("جوجل")) {
+                                        bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
+                                    } else {
                                         bot.sendMessage(msg.chat.id, result, { parse_mode: 'Markdown' })
                                         .catch(() => {bot.sendMessage(msg.chat.id, result)})
-                                    } else {
-                                        bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
                                     }
                                 }
                             } else {
@@ -138,6 +136,7 @@ bot.on('photo', async (ctx) => {
         if (await chatMember(ctx.chat.id) == 'ok') {
             const urlImage = await bot.getFileLink(ctx.photo[ctx.photo.length - 1].file_id)
             const result = await runImage(ctx.caption, urlImage)
+            // console.log(result)
             try {
                 if (result == 'err') {
                     bot.sendMessage(ctx.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
@@ -167,6 +166,7 @@ bot.on('message', async (ctx) => {
                         const link = ctx.reply_to_message.photo
                         const urlImage = await bot.getFileLink(link[2].file_id)
                         const result = await runImage(ctx.text, urlImage)
+                        // console.log(result)
                         try {
                             if (result == 'err') {
                                 bot.sendMessage(ctx.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
