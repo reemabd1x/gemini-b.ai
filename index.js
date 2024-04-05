@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json())
 app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run bot6' })
+    res.json({ run: 'run bot7' })
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
 // PING BOT ----
@@ -164,7 +164,7 @@ bot.on('message', async (ctx) => {
                 if (ctx.reply_to_message.photo) {
                     if (await chatMember(ctx.chat.id) == 'ok') {
                         const link = ctx.reply_to_message.photo
-                        const urlImage = await bot.getFileLink(link[2].file_id)
+                        const urlImage = await bot.getFileLink(link[0].file_id)
                         const result = await runImage(ctx.text, urlImage)
                         // console.log(result)
                         try {
