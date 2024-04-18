@@ -9,13 +9,15 @@ const app = express();
 app.use(express.json())
 app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run bot2' })
+    res.json({ run: 'run bot5' })
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
 // PING BOT ----
 setInterval(async () => {
-    const res = await fetch('https://gemini-b-ai.onrender.com/')
-    const data1 = await res.json()
+    try {
+        const res = await fetch('https://gemini-b-ai.onrender.com/')
+        const data1 = await res.json()
+    } catch (err) { console.log('err intrv') }
 }, 100 * 1000)
 console.log('bot is ready...')
 
@@ -32,7 +34,6 @@ async function runText(prompt) {
 async function runImage(prompt, urlImage) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-        // fetch node
         const headers = new Headers(); headers.append('Accept', 'image/jpeg');
         const res = await fetch(urlImage, { headers: headers })
         const data = await res.blob()
@@ -44,35 +45,38 @@ async function runImage(prompt, urlImage) {
 }
 
 async function chatMember(id) {
-    const res = await bot.getChatMember('@bashar_prog', id)
-    if (res.status != 'left' && res.status != 'kicked') {
-        return 'ok'
-    } else if (res.status == 'left') {
-        bot.sendMessage(id, 'عذرا ! \n يجب عليك اولا الأشتراك بالقناة', {
-            'reply_markup': {
-                "inline_keyboard": [
-                    [{ text: "اشترك من هنا", url: "https://t.me/bashar_prog" }],
-                    [{ text: "تابعني على انستكرام", url: "https://instagram.com/bashar1_x" }]
-                ]
-            }
-        })
-        return 'none'
-    } else if (res.status == 'kicked') {
-        bot.sendMessage(id, `انت محضور من الأستخدام, راجع احد المشرفين لمساعدتك`, {
-            'reply_markup': {
-                "inline_keyboard": [
-                    [
-                        { text: "bashar", url: "https://t.me/bashar1_x" },
-                        { text: "amjad", url: "https://t.me/amjad_kh1" },
-                        { text: "hamam", url: "https://t.me/hmam1_x" }
+    try {
+        const res = await bot.getChatMember('@bashar_prog', id)
+        if (res.status != 'left' && res.status != 'kicked') {
+            return 'ok'
+        } else if (res.status == 'left') {
+            bot.sendMessage(id, 'عذرا ! \n يجب عليك اولا الأشتراك بالقناة', {
+                'reply_markup': {
+                    "inline_keyboard": [
+                        [{ text: "اشترك من هنا", url: "https://t.me/bashar_prog" }],
+                        [{ text: "تابعني على انستكرام", url: "https://instagram.com/bashar1_x" }]
                     ]
-                ]
-            }
-        })
-        return 'none'
-    }
+                }
+            })
+            return 'none'
+        } else if (res.status == 'kicked') {
+            bot.sendMessage(id, `انت محضور من الأستخدام, راجع احد المشرفين لمساعدتك`, {
+                'reply_markup': {
+                    "inline_keyboard": [
+                        [
+                            { text: "bashar", url: "https://t.me/bashar1_x" },
+                            { text: "amjad", url: "https://t.me/amjad_kh1" },
+                            { text: "hamam", url: "https://t.me/hmam1_x" }
+                        ]
+                    ]
+                }
+            })
+            return 'none'
+        }
+    } catch (err) { console.log('err grob') }
+
 }
-// console.log( await chatMember(5358365084))
+
 const arr_what = ['من مطورك', 'من طورك', 'من صنعك', 'من برمجك', 'من اخترعك', 'منو سواك', 'منو اخترعك', 'منو صنعك', 'منو برمجك', 'منو طورك', 'من بشار']
 const arr_dev = ['بشار مرشد الحيوي', 'قام بتطويري بشار حيوي', 'بشار مرشد الحيوي القاطن في الرقة مزرعة ربيعة', 'مطوري بشار مرشد الحيوي', 'قام بإنشائي بشار وبمساعدة من  امجد الخلف']
 const arr_bad = ['مرحبا بك كيف حالك اليوم هل انت بحاجة الى مساعدة انا ذكاء اصطناعي قادر على مساعدتك', 'مرحبا انا نموذج ذكاء اصطناعي تم تطويري بواسطة بشار الحيوي', 'انا ذكاء اصطناعي تم تدريبي بواسطة بشار مرشد الحيوي']
@@ -94,13 +98,13 @@ bot.on('message', async (msg) => {
                                     bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
                                 } else {
                                     bot.sendMessage(msg.chat.id, result, { parse_mode: 'Markdown' })
-                                    .catch(() => {bot.sendMessage(msg.chat.id, result)})
+                                        .catch(() => { bot.sendMessage(msg.chat.id, result) })
                                 }
                             }
                         } else {
-                            bot.sendMessage(msg.chat.id, arr_dev[[Math.floor(Math.random() * arr_dev.length - 1) + 1]])
+                            bot.sendMessage(msg.chat.id, arr_dev[Math.floor(Math.random() * arr_dev.length - 1) + 1])
                         }
-                    } catch (err) { console.log('err') }
+                    } catch (err) { console.log('err msg') }
                 }
             } else if (msg.reply_to_message) {
                 if (msg.reply_to_message.text) {
@@ -116,14 +120,14 @@ bot.on('message', async (msg) => {
                                         bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
                                     } else {
                                         bot.sendMessage(msg.chat.id, result, { parse_mode: 'Markdown' })
-                                        .catch(() => {bot.sendMessage(msg.chat.id, result)})
+                                            .catch(() => { bot.sendMessage(msg.chat.id, result) })
                                     }
                                 }
                             } else {
-                                bot.sendMessage(msg.chat.id, arr_dev[[Math.floor(Math.random() * arr_dev.length - 1) + 1]])
+                                bot.sendMessage(msg.chat.id, arr_dev[Math.floor(Math.random() * arr_dev.length - 1) + 1])
                             }
 
-                        } catch (err) { console.log('err') }
+                        } catch (err) { console.log('err msg r') }
                     }
                 }
             }
@@ -142,9 +146,9 @@ bot.on('photo', async (ctx) => {
                     bot.sendMessage(ctx.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
                 } else {
                     bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' })
-                    .catch(() => {bot.sendMessage(ctx.chat.id, result)})
+                        .catch(() => { bot.sendMessage(ctx.chat.id, result) })
                 }
-            } catch (err) { console.log('err') }
+            } catch (err) { console.log('err img') }
         }
     } else {
         const arr = [
@@ -164,7 +168,7 @@ bot.on('message', async (ctx) => {
                 if (ctx.reply_to_message.photo) {
                     if (await chatMember(ctx.chat.id) == 'ok') {
                         const link = ctx.reply_to_message.photo
-                        const urlImage = await bot.getFileLink(link[0].file_id)
+                        const urlImage = await bot.getFileLink(link[link.length - 1].file_id)
                         const result = await runImage(ctx.text, urlImage)
                         // console.log(result)
                         try {
@@ -172,9 +176,9 @@ bot.on('message', async (ctx) => {
                                 bot.sendMessage(ctx.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
                             } else {
                                 bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' })
-                                .catch(() => {bot.sendMessage(ctx.chat.id, result)})
+                                    .catch(() => { bot.sendMessage(ctx.chat.id, result) })
                             }
-                        } catch (err) { console.log('err') }
+                        } catch (err) { console.log('err img r') }
                     }
                 }
             }
@@ -183,19 +187,21 @@ bot.on('message', async (ctx) => {
 })
 
 bot.on('voice', (msg) => {
-    const arr_audio = [ `انا لا استطيع سماع الرسائل الصوتية`, `عفوا لا يمكنني سماع الصوت لم اتدرب جيدا على هذا`, `أتمنى لو كان بامكاني سماع الصوت لاكن لم اتدرب بشكل كاف`]
+    const arr_audio = [`انا لا استطيع سماع الرسائل الصوتية`, `عفوا لا يمكنني سماع الصوت لم اتدرب جيدا على هذا`, `أتمنى لو كان بامكاني سماع الصوت لاكن لم اتدرب بشكل كاف`]
     bot.sendMessage(msg.chat.id, arr_audio[Math.floor(Math.random() * arr_audio.length - 1) + 1])
 })
 
 const runFollow = async (id) => {
-    const random = Math.floor(Math.random() * 25 - 1) + 1;
-    if (random == 11) {
-        bot.sendMessage(id, 'يجب عليك متابعة بشار ..', {
-            'reply_markup': {
-                "inline_keyboard": [[{ text: "أضغط للمتابعة", url: "https://instagram.com/bashar1_x" }]]
-            }
-        })
-    }
+    try {
+        const random = Math.floor(Math.random() * 20 - 1) + 1;
+        if (random == 11) {
+            bot.sendMessage(id, 'يجب عليك متابعة بشار ..', {
+                'reply_markup': {
+                    "inline_keyboard": [[{ text: "أضغط للمتابعة", url: "https://instagram.com/bashar1_x" }]]
+                }
+            })
+        }
+    } catch (err) { console.log('err folw') }
 }
 
 
@@ -232,7 +238,7 @@ bot.onText(command[0].regexp, (msg) => {
 `
     bot.sendMessage(msg.chat.id, text, {
         'reply_markup': {
-            "inline_keyboard": [ [ { text: "شارك للأصدقاء", switch_inline_query: "هذا البوت سوف يساعدك كثيراً" } ] ]
+            "inline_keyboard": [[{ text: "شارك للأصدقاء", switch_inline_query: "هذا البوت سوف يساعدك كثيراً" }]]
         }
     })
 })
@@ -269,12 +275,14 @@ bot.onText(command[2].regexp, (msg) => {
     })
 })
 bot.onText(command[3].regexp, (msg) => {
-    if (msg.chat.id == 5358365084 || msg.chat.id == 6203364714 || msg.chat.id == 5292258678) {
-        bot.getChatMemberCount('@bashar_prog').then((res) => {
-            // console.log(res)
-            bot.sendMessage(msg.chat.id, `.المشتركين (${res})`)
-        })
-    } else { bot.sendMessage(msg.chat.id, `انت غير مسؤول, مسؤولوا البوت \n @bashar1_x  @amjad_kh1 @hmam1_x`) }
+    try {
+        if (msg.chat.id == 5358365084 || msg.chat.id == 6203364714 || msg.chat.id == 5292258678) {
+            bot.getChatMemberCount('@bashar_prog').then((res) => {
+                // console.log(res)
+                bot.sendMessage(msg.chat.id, `.المشتركين (${res})`)
+            })
+        } else { bot.sendMessage(msg.chat.id, `انت غير مسؤول, مسؤولوا البوت \n @bashar1_x  @amjad_kh1 @hmam1_x`) }
+    } catch (err) { console.log('err cosnt') }
 })
 bot.setMyCommands(command)
 bot.on('polling_error', console.log)
