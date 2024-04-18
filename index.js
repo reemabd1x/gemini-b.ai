@@ -54,19 +54,17 @@ async function chatMember(id) {
                 'reply_markup': {
                     "inline_keyboard": [
                         [{ text: "اشترك من هنا", url: "https://t.me/bashar_prog" }],
-                        [{ text: "تابعني على انستكرام", url: "https://instagram.com/bashar1_x" }]
+                        [{ text: "تابعني على انستغرام", url: "https://instagram.com/bashar1_x" }]
                     ]
                 }
             })
             return 'none'
         } else if (res.status == 'kicked') {
-            bot.sendMessage(id, `انت محضور من الأستخدام, راجع احد المشرفين لمساعدتك`, {
+            bot.sendMessage(id, `انت محضور من الأستخدام, راجع المنشئ لمساعدتك`, {
                 'reply_markup': {
                     "inline_keyboard": [
                         [
-                            { text: "bashar", url: "https://t.me/bashar1_x" },
-                            { text: "amjad", url: "https://t.me/amjad_kh1" },
-                            { text: "hamam", url: "https://t.me/hmam1_x" }
+                            { text: "bashar", url: "https://t.me/bashar1_x" }
                         ]
                     ]
                 }
