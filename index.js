@@ -2,9 +2,9 @@ import fetch from "node-fetch";
 import TelegramBot from "node-telegram-bot-api";
 import express from "express";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai"
-// CREATE CLASS AND FUNCTION
+// CREATE CLASS AND FUNCTION  6344810463:AAHwgKXYOfqasoh2HC2OsZTwG8KEnvQtSas
 const bot = new TelegramBot('6344810463:AAHwgKXYOfqasoh2HC2OsZTwG8KEnvQtSas', { polling: true });
-const genAI = new GoogleGenerativeAI('AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY');
+const genAI = new GoogleGenerativeAI("AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY")
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded())
@@ -21,25 +21,37 @@ setInterval(async () => {
 }, 100 * 1000)
 console.log('bot is ready...')
 
-async function runText(prompt) {
+
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" })
+const generationConfig = { temperature: 1, topK: 0, topP: 0.95, maxOutputTokens: 5000, };
+const safetySettings = [
+    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE, },
+    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE, },
+    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE, },
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE, },
+];
+
+// RUN CHAT TEXT
+async function runChatText(text) {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        const generationConfig = { temperature: 0.9, topK: 1, topP: 1, maxOutputTokens: 1000, };
-        const chat = model.startChat({ generationConfig })
-        const result = await chat.sendMessage(prompt)
-        const response = await result.response.text()
+        const chat = model.startChat({ generationConfig, safetySettings })
+        const result = await chat.sendMessage(text)
+        const response = result.response.text()
         return response
     } catch (err) { return 'err' }
 }
-async function runImage(prompt, urlImage) {
+
+
+// RUN CHAT MEDIA
+async function runChatMedia(prompt, urlImage) {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
         const headers = new Headers(); headers.append('Accept', 'image/jpeg');
-        const res = await fetch(urlImage, { headers: headers })
+        const res = await fetch(urlImage, { headers })
         const data = await res.blob()
-        const imagePars = { inlineData: { data: Buffer.from(await data.arrayBuffer()).toString('base64'), mimeType: "image/png", } };
-        const result = await model.generateContent([prompt, imagePars]);
-        const response = await result.response.text()
+        const parssMedia = { inlineData: { data: Buffer.from(await data.arrayBuffer()).toString('base64'), mimeType: "image/png", } };
+        const chat = model.startChat({ generationConfig, safetySettings })
+        const result = await chat.sendMessage([prompt, parssMedia])
+        const response = result.response.text()
         return response
     } catch (err) { return 'err' }
 }
@@ -85,14 +97,14 @@ bot.on('message', async (msg) => {
         if (msg.text) {
             if (!msg.reply_to_message) {
                 if (await chatMember(msg.chat.id) == 'ok') {
-                    const result = await runText(msg.text)
+                    const result = await runChatText(msg.text)
                     // console.log(result)
                     try {
                         if (!arr_what.includes(msg.text)) {
                             if (result == 'err') {
                                 bot.sendMessage(msg.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
                             } else {
-                                if (result.includes("نموذج") && result.includes("لغوي") && result.includes("جوجل")) {
+                                if (result.includes("نموذج") && result.includes("أنا") && result.includes("جوجل")) {
                                     bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
                                 } else {
                                     bot.sendMessage(msg.chat.id, result, { parse_mode: 'Markdown' })
@@ -107,14 +119,14 @@ bot.on('message', async (msg) => {
             } else if (msg.reply_to_message) {
                 if (msg.reply_to_message.text) {
                     if (await chatMember(msg.chat.id) == 'ok') {
-                        const result = await runText(msg.text)
+                        const result = await runChatText(msg.text)
                         // console.log(result)
                         try {
                             if (!arr_what.includes(msg.text)) {
                                 if (result == 'err') {
                                     bot.sendMessage(msg.chat.id, err_msg[Math.floor(Math.random() * err_msg.length - 1) + 1])
                                 } else {
-                                    if (result.includes("نموذج") && result.includes("لغوي") && result.includes("جوجل")) {
+                                    if (result.includes("نموذج") && result.includes("أنا") && result.includes("جوجل")) {
                                         bot.sendMessage(msg.chat.id, arr_bad[Math.floor(Math.random() * arr_bad.length - 1) + 1])
                                     } else {
                                         bot.sendMessage(msg.chat.id, result, { parse_mode: 'Markdown' })
@@ -133,11 +145,13 @@ bot.on('message', async (msg) => {
     }
 })
 
+
+
 bot.on('photo', async (ctx) => {
     if (ctx.caption) {
         if (await chatMember(ctx.chat.id) == 'ok') {
             const urlImage = await bot.getFileLink(ctx.photo[ctx.photo.length - 1].file_id)
-            const result = await runImage(ctx.caption, urlImage)
+            const result = await runChatMedia(ctx.caption, urlImage)
             // console.log(result)
             try {
                 if (result == 'err') {
@@ -159,7 +173,7 @@ bot.on('photo', async (ctx) => {
     }
 })
 bot.on('message', async (ctx) => {
-    runFollow()
+    runFollow(ctx.chat.id)
     if (!arr_command.includes(ctx.text)) {
         if (ctx.text) {
             if (ctx.reply_to_message) {
@@ -167,7 +181,7 @@ bot.on('message', async (ctx) => {
                     if (await chatMember(ctx.chat.id) == 'ok') {
                         const link = ctx.reply_to_message.photo
                         const urlImage = await bot.getFileLink(link[link.length - 1].file_id)
-                        const result = await runImage(ctx.text, urlImage)
+                        const result = await runChatMedia(ctx.text, urlImage)
                         // console.log(result)
                         try {
                             if (result == 'err') {
@@ -191,14 +205,11 @@ bot.on('voice', (msg) => {
 
 const runFollow = async (id) => {
     try {
-        const random = Math.floor(Math.random() * 20 - 1) + 1;
-        if (random == 11) {
-            bot.sendMessage(id, 'يجب عليك متابعة بشار ..', {
-                'reply_markup': {
-                    "inline_keyboard": [[{ text: "أضغط للمتابعة", url: "https://instagram.com/bashar1_x" }]]
-                }
-            })
-        }
+        bot.sendMessage(id, 'سيتم إيقاف الروبوت على تلغرام في الأيام القادمة، لتستطيع استخدام الذكاء الاصطناعي المساعد الكامل يجب عليك تنزيل التطبيق ⬇️', {
+            'reply_markup': {
+                "inline_keyboard": [[{ text: "أضغط للتحميل", url: "https://gemini-wjs-b.onrender.com/download" }]]
+            }
+        })
     } catch (err) { console.log('err folw') }
 }
 
