@@ -204,13 +204,16 @@ bot.on('voice', (msg) => {
 })
 
 const runFollow = async (id) => {
-    try {
+    let random = Math.floor(Math.random() * 10) + 1
+    if(random == 5){
+        try {
         bot.sendMessage(id, 'سيتم إيقاف الروبوت على تلغرام في الأيام القادمة، لتستطيع استخدام الذكاء الاصطناعي المساعد الكامل يجب عليك تنزيل التطبيق ⬇️', {
             'reply_markup': {
                 "inline_keyboard": [[{ text: "أضغط للتحميل", url: "https://gemini-wjs-b.onrender.com/download" }]]
             }
         })
-    } catch (err) { console.log('err folw') }
+        } catch (err) { console.log('err folw') }
+    }
 }
 
 
