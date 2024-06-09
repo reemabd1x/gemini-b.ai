@@ -204,7 +204,7 @@ bot.on('voice', (msg) => {
 })
 
 const runFollow = async (id) => {
-    let random = Math.floor(Math.random() * 10) + 1
+    let random = Math.floor(Math.random() * 17) + 1
     if(random == 5){
         try {
         bot.sendMessage(id, 'سيتم إيقاف الروبوت على تلغرام في الأيام القادمة، لتستطيع استخدام الذكاء الاصطناعي المساعد الكامل يجب عليك تنزيل التطبيق ⬇️', {
