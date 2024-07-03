@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import TelegramBot from "node-telegram-bot-api";
 import express from "express";
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 // CREATE CLASS AND FUNCTION  6344810463:AAHwgKXYOfqasoh2HC2OsZTwG8KEnvQtSas
 const bot = new TelegramBot('6344810463:AAHwgKXYOfqasoh2HC2OsZTwG8KEnvQtSas', { polling: true });
 const genAI = new GoogleGenerativeAI("AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY")
@@ -22,19 +22,20 @@ setInterval(async () => {
 console.log('bot is ready...')
 
 
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" })
-const generationConfig = { temperature: 1, topK: 0, topP: 0.95, maxOutputTokens: 5000, };
-const safetySettings = [
-    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE, },
-    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE, },
-    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE, },
-    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE, },
-];
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+const generationConfig = {
+    temperature: 1,
+    topP: 0.95,
+    topK: 64,
+    maxOutputTokens: 8192,
+    responseMimeType: "text/plain",
+  };
+
 
 // RUN CHAT TEXT
 async function runChatText(text) {
     try {
-        const chat = model.startChat({ generationConfig, safetySettings })
+        const chat = model.startChat({ generationConfig })
         const result = await chat.sendMessage(text)
         const response = result.response.text()
         return response
@@ -49,7 +50,7 @@ async function runChatMedia(prompt, urlImage) {
         const res = await fetch(urlImage, { headers })
         const data = await res.blob()
         const parssMedia = { inlineData: { data: Buffer.from(await data.arrayBuffer()).toString('base64'), mimeType: "image/png", } };
-        const chat = model.startChat({ generationConfig, safetySettings })
+        const chat = model.startChat({ generationConfig })
         const result = await chat.sendMessage([prompt, parssMedia])
         const response = result.response.text()
         return response
