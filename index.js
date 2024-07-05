@@ -1,28 +1,22 @@
 import fetch from "node-fetch";
 import TelegramBot from "node-telegram-bot-api";
 import express from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 // CREATE CLASS AND FUNCTION  6344810463:AAHwgKXYOfqasoh2HC2OsZTwG8KEnvQtSas
 const bot = new TelegramBot('6344810463:AAHwgKXYOfqasoh2HC2OsZTwG8KEnvQtSas', { polling: true });
 const genAI = new GoogleGenerativeAI("AIzaSyDpNB7IQ4qLwNU_-4g3ye8pSwHjzaKXloY")
 const app = express();
-app.use(express.json())
-app.use(express.urlencoded())
+app.use(express.json()); app.use(express.urlencoded())
 app.get('/', (req, res) => {
     res.json({ run: 'run bot6' })
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
 // PING BOT ----
 setInterval(async () => {
-    try {
-        const res = await fetch('https://gemini-b-ai.onrender.com/')
-        const data1 = await res.json()
-    } catch (err) { console.log('err intrv') }
+    try { const res = await fetch('https://gemini-b-ai.onrender.com/') }
+    catch (err) { console.log('err intrv') }
 }, 100 * 1000)
-console.log('bot is ready...')
 
-
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 const generationConfig = {
     temperature: 1,
     topP: 0.95,
@@ -30,7 +24,13 @@ const generationConfig = {
     maxOutputTokens: 8192,
     responseMimeType: "text/plain",
   };
-
+  const safetySettings = [
+    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE, },
+    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE, },
+    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE, },
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE, },
+  ];
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings })
 
 // RUN CHAT TEXT
 async function runChatText(text) {
