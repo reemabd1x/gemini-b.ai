@@ -210,7 +210,7 @@ const runFollow = async (id) => {
         try {
         bot.sendMessage(id, 'سيتم إيقاف الروبوت على تلغرام في الأيام القادمة، لتستطيع استخدام الذكاء الاصطناعي المساعد الكامل يجب عليك تنزيل التطبيق ⬇️', {
             'reply_markup': {
-                "inline_keyboard": [[{ text: "أضغط للتحميل", url: "https://gemini-wjs-b.onrender.com/download" }]]
+                "inline_keyboard": [[{ text: "أضغط للتحميل", url: "https://node-tele.onrender.com/download" }]]
             }
         })
         } catch (err) { console.log('err folw') }
