@@ -6,7 +6,7 @@ import { scanBadChats } from "./FunctionsAi/scanBadChats.js";
 import { getBufferFiles } from "./controllers/getBufferFiles.js";
 import { commands } from "./controllers/commands.js";
 const app = express();
-const bot = new TelegramBot('7935204461:AAGw2YA1Z5OD6JP_EJ18a2iYIcLG7Ul-2hU', { polling: true });
+const bot = new TelegramBot(process.env.KEY_TELEGRAM, { polling: true });
 dotenv.config();
 // FUNCTIONS RUN IN PRIVATE
 bot.on('text', async (ctx) => {
@@ -22,7 +22,7 @@ bot.on('text', async (ctx) => {
 bot.on('document', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
-        if (ctx.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'to pdf',)
+        if (ctx.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'It must be in pdf format.',)
         console.log('doc user', ctx);
         const urlDoc = await bot.getFileLink(ctx.document.file_id)
         const inlineData = await getBufferFiles(urlDoc, 'application/pdf')
@@ -92,7 +92,7 @@ bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
     try {
         console.log('regx xaztom', ctx);
         if (ctx.chat.type !== 'supergroup') return bot.sendMessage(ctx.chat.id, 'It only works in groups.')
-        if (!ctx?.reply_to_message) return bot.sendMessage(ctx.chat.id, 'reply message.')
+        if (!ctx?.reply_to_message) return bot.sendMessage(ctx.chat.id, 'Reply to the message')
 
         let endReplace = ctx.text.replace("/xaztom@xaztom_bot", "");
         console.log(endReplace);
@@ -157,7 +157,7 @@ const sendError = (id) => {
 
 app.use(express.json()); app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run xaztom bot1' })
+    res.json({ run: 'run xaztom bot v-2' })
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
 // PING BOT ----
