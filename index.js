@@ -13,7 +13,7 @@ bot.on('text', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
         if (ctx.reply_to_message) return
-        console.log('text user', ctx);
+        // console.log('text user', ctx);
         const result = await runChat(ctx.text, ctx.from?.first_name || 'brother');
         bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
     } catch (err) { console.log(err), sendError(ctx.chat.id) }
@@ -23,7 +23,7 @@ bot.on('document', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
         if (ctx.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'It must be in pdf format.',)
-        console.log('doc user', ctx);
+        // console.log('doc user', ctx);
         const urlDoc = await bot.getFileLink(ctx.document.file_id)
         const inlineData = await getBufferFiles(urlDoc, 'application/pdf')
         const result = await runChat(ctx?.caption || '?', ctx.from?.first_name || 'brother', inlineData)
@@ -34,7 +34,7 @@ bot.on('document', async (ctx) => {
 bot.on('photo', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
-        console.log('photo user', ctx);
+        // console.log('photo user', ctx);
         const urlPhoto = await bot.getFileLink(ctx.photo[ctx.photo.length - 1].file_id)
         const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
         const result = await runChat(ctx?.caption || '?', ctx.from?.first_name || 'brother', inlineData)
@@ -48,7 +48,7 @@ bot.on('text', async (ctx) => {
         if (ctx?.reply_to_message) {
 
             if (ctx?.reply_to_message?.photo) {
-                console.log('reply user photo', ctx);
+                // console.log('reply user photo', ctx);
                 const link = ctx.reply_to_message.photo
                 const urlPhoto = await bot.getFileLink(link[link.length - 1].file_id)
                 const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
@@ -56,7 +56,7 @@ bot.on('text', async (ctx) => {
                 bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
 
             } else if (ctx?.reply_to_message?.document) {
-                console.log('reply user docs', ctx);
+                // console.log('reply user docs', ctx);
                 if (ctx.reply_to_message.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'It must be in pdf format.',)
                 const link = ctx.reply_to_message.document
                 const urlDoc = await bot.getFileLink(link.file_id)
@@ -65,7 +65,7 @@ bot.on('text', async (ctx) => {
                 bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
 
             } else if (ctx?.reply_to_message?.text) {
-                console.log('reply user text', ctx);
+                // console.log('reply user text', ctx);
                 const allText = `${ctx?.reply_to_message?.text || ''} \n\n\n ${ctx.text}`
                 const result = await runChat(allText, ctx.from?.first_name || 'brother',);
                 bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
@@ -78,7 +78,7 @@ bot.on('text', async (ctx) => {
 // // // COMMANDS
 bot.onText(/\/start/, async (ctx) => { //command start
     try {
-        console.log('regx start', ctx);
+        // console.log('regx start', ctx);
         const result = await runChat('How can I benefit from you?', ctx.from?.first_name || 'brother');
         bot.sendMessage(ctx.chat.id, result, {
             parse_mode: 'Markdown',
@@ -90,19 +90,18 @@ bot.onText(/\/start/, async (ctx) => { //command start
 
 bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
     try {
-        console.log('regx xaztom', ctx);
+        // console.log('regx xaztom', ctx);
         if (ctx.chat.type !== 'supergroup') return bot.sendMessage(ctx.chat.id, 'It only works in groups.')
         if (!ctx?.reply_to_message) return bot.sendMessage(ctx.chat.id, 'Reply to the message')
 
         let endReplace = ctx.text.replace("/xaztom@xaztom_bot", "");
-        console.log(endReplace);
         if (ctx.reply_to_message?.text) {
             console.log('c reply user text', ctx);
             const result = await runChat(ctx.reply_to_message.text + endReplace, ctx.reply_to_message.from?.first_name || 'brother');
             bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
 
         } else if (ctx.reply_to_message?.photo) {
-            console.log('c reply user photo', ctx);
+            // console.log('c reply user photo', ctx);
             const link = ctx.reply_to_message.photo
             const urlPhoto = await bot.getFileLink(link[link.length - 1].file_id)
             const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
@@ -110,7 +109,7 @@ bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
             bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
 
         } else if (ctx.reply_to_message?.document) {
-            console.log('reply user docs', ctx);
+            // console.log('reply user docs', ctx);
             if (ctx.reply_to_message.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'It must be in pdf format.',)
             const link = ctx.reply_to_message.document
             const urlDoc = await bot.getFileLink(link.file_id)
@@ -126,18 +125,18 @@ bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
 bot.on('message', async (ctx) => {
     try {
         if (ctx.chat.type !== 'supergroup') return;
-        console.log(ctx);
+        // console.log(ctx);
 
         if (ctx?.photo) {
             const urlPhoto = await bot.getFileLink(ctx.photo[0].file_id)
             const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
             const result = await scanBadChats(ctx?.caption || '..', inlineData)
-            console.log(result);
+            // console.log(result);
             result === 'true' ? await bot.deleteMessage(ctx.chat.id, ctx.message_id) : null
 
         } else {
             const result = await scanBadChats(ctx.text);
-            console.log(result);
+            // console.log(result);
             result === 'true' ? await bot.deleteMessage(ctx.chat.id, ctx.message_id) : null
         }
     } catch (err) { console.log(err) }
