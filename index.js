@@ -6,7 +6,7 @@ import { scanBadChats } from "./FunctionsAi/scanBadChats.js";
 import { getBufferFiles } from "./controllers/getBufferFiles.js";
 import { commands } from "./controllers/commands.js";
 const app = express();
-const bot = new TelegramBot(process.env.KEY_TELEGRAM, { polling: true });
+const bot = new TelegramBot('7935204461:AAGw2YA1Z5OD6JP_EJ18a2iYIcLG7Ul-2hU', { polling: true });
 dotenv.config();
 // FUNCTIONS RUN IN PRIVATE
 bot.on('text', async (ctx) => {
