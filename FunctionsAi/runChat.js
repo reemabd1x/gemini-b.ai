@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { safetySettings, generationConfig } from '../setting/exportSetting.js'
 import { systemInstruction } from "../controllers/systemInstruction.js";
 dotenv.config();
-const genAI = new GoogleGenerativeAI("AIzaSyA3_xSQfnOlx_TOj7UKUTVu2MXMWnaWpzo");
+const genAI = new GoogleGenerativeAI(process.env.KEY_XAZTOM);
 export const runChat = async (text, nameUser, file) => {
     console.log('run', text);
     const history = systemInstruction(nameUser)
