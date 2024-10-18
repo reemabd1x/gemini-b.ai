@@ -6,10 +6,9 @@ dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.KEY_XAZTOM);
 export const runChat = async (text, nameUser, file) => {
     console.log('run', text);
-    const history = systemInstruction(nameUser)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002", safetySettings })
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002", safetySettings, systemInstruction: systemInstruction(nameUser) })
     try {
-        const chat = model.startChat({ generationConfig, history })
+        const chat = model.startChat({ generationConfig, })
         const result = file ? await chat.sendMessage([file, text]) : await chat.sendMessage(text)
         const response = result.response.text()
         return response
