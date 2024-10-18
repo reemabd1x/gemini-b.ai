@@ -156,7 +156,7 @@ const sendError = (id) => {
 
 app.use(express.json()); app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run xaztom bot v-2' })
+    res.json({ run: 'run xaztom bot v-3' })
 }); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
 
 // PING BOT ----
