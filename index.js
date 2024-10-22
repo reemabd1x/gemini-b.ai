@@ -5,6 +5,7 @@ import { runChat } from "./FunctionsAi/runChat.js";
 import { scanBadChats } from "./FunctionsAi/scanBadChats.js";
 import { getBufferFiles } from "./controllers/getBufferFiles.js";
 import { commands } from "./controllers/commands.js";
+import { errorServer } from "./controllers/errorServer.js";
 const app = express();
 const bot = new TelegramBot(process.env.KEY_TELEGRAM, { polling: true });
 dotenv.config();
@@ -132,12 +133,19 @@ bot.on('message', async (ctx) => {
             const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
             const result = await scanBadChats(ctx?.caption || '..', inlineData)
             // console.log(result);
-            result === 'true' ? await bot.deleteMessage(ctx.chat.id, ctx.message_id) : null
+            if(result === 'true') {
+                await bot.deleteMessage(ctx.chat.id, ctx.message_id)
+                errorServer('BAD-MESSAGE:', `${ctx.from?.username} \n ${ctx?.caption}`)
+            }
+            
 
         } else {
             const result = await scanBadChats(ctx.text);
             // console.log(result);
-            result === 'true' ? await bot.deleteMessage(ctx.chat.id, ctx.message_id) : null
+            if(result === 'true') {
+                await bot.deleteMessage(ctx.chat.id, ctx.message_id)
+                errorServer('BAD-MESSAGE:', `${ctx.from?.username} \n ${ctx.text}`)
+            }
         }
     } catch (err) { console.log(err) }
 })
@@ -156,8 +164,8 @@ const sendError = (id) => {
 
 app.use(express.json()); app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run xaztom bot v-3' })
-}); app.listen(process.env.PORT || 3000, () => { console.log(`listen`) })
+    res.json({ run: 'run xaztom bot v-2' })
+}); app.listen(process.env.PORT || 3001, () => { console.log(`listen`) })
 
 // PING BOT ----
 setInterval(async () => {
