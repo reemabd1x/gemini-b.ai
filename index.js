@@ -1,41 +1,39 @@
 import express from "express";
 import TelegramBot from "node-telegram-bot-api";
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'; dotenv.config();
 import { runChat } from "./FunctionsAi/runChat.js";
 import { scanBadChats } from "./FunctionsAi/scanBadChats.js";
 import { getBufferFiles } from "./controllers/getBufferFiles.js";
 import { commands } from "./controllers/commands.js";
 import { errorServer } from "./controllers/errorServer.js";
+import { chatMember } from "./controllers/chatMember.js";
 const app = express();
 const bot = new TelegramBot(process.env.KEY_TELEGRAM, { polling: true });
-dotenv.config();
 // FUNCTIONS RUN IN PRIVATE
 bot.on('text', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
         if (ctx.reply_to_message) return
-        // console.log('text user', ctx);
+        if (await chatMember(bot, ctx.from.id)) return
         const result = await runChat(ctx.text, ctx.from?.first_name || 'brother');
         bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
     } catch (err) { console.log(err), sendError(ctx.chat.id) }
 });
-
 bot.on('document', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
-        if (ctx.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'It must be in pdf format.',)
-        // console.log('doc user', ctx);
+        if (ctx.document.mime_type !== 'application/pdf') return bot.sendMessage(ctx.chat.id, 'It must be in pdf format.')
+        if (await chatMember(bot, ctx.from.id)) return
         const urlDoc = await bot.getFileLink(ctx.document.file_id)
         const inlineData = await getBufferFiles(urlDoc, 'application/pdf')
         const result = await runChat(ctx?.caption || '?', ctx.from?.first_name || 'brother', inlineData)
         bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
     } catch (err) { console.log(err), sendError(ctx.chat.id) }
 });
-
 bot.on('photo', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
-        // console.log('photo user', ctx);
+        if (await chatMember(bot, ctx.from.id)) return
         const urlPhoto = await bot.getFileLink(ctx.photo[ctx.photo.length - 1].file_id)
         const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
         const result = await runChat(ctx?.caption || '?', ctx.from?.first_name || 'brother', inlineData)
@@ -47,6 +45,7 @@ bot.on('text', async (ctx) => {
     try {
         if (ctx.chat.type !== 'private') return; if (ctx.entities) return
         if (ctx?.reply_to_message) {
+            if (await chatMember(bot, ctx.from.id)) return
 
             if (ctx?.reply_to_message?.photo) {
                 // console.log('reply user photo', ctx);
@@ -127,7 +126,6 @@ bot.on('message', async (ctx) => {
     try {
         if (ctx.chat.type !== 'supergroup') return;
         // console.log(ctx);
-
         if (ctx?.photo) {
             const urlPhoto = await bot.getFileLink(ctx.photo[0].file_id)
             const inlineData = await getBufferFiles(urlPhoto, 'image/jpeg')
@@ -138,7 +136,6 @@ bot.on('message', async (ctx) => {
                 errorServer('BAD-MESSAGE:', `${ctx.from?.username} \n ${ctx?.caption}`)
             }
             
-
         } else {
             const result = await scanBadChats(ctx.text);
             // console.log(result);
