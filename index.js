@@ -92,6 +92,7 @@ bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
     try {
         // console.log('regx xaztom', ctx);
         if (ctx.chat.type !== 'supergroup') return bot.sendMessage(ctx.chat.id, 'It only works in groups.')
+        if (ctx.chat.username == 'tarmeezReact' || ctx.chat.username == 'tarmeezCommunity') return bot.sendMessage(ctx.chat.id, `not working: ${ctx.chat.username}`)
         if (!ctx?.reply_to_message) return bot.sendMessage(ctx.chat.id, 'Reply to the message')
 
         let endReplace = ctx.text.replace("/xaztom@xaztom_bot", "");
@@ -161,7 +162,7 @@ const sendError = (id) => {
 
 app.use(express.json()); app.use(express.urlencoded())
 app.get('/', (req, res) => {
-    res.json({ run: 'run xaztom bot v-2' })
+    res.json({ run: 'run xaztom bot v-3' })
 }); app.listen(process.env.PORT || 3001, () => { console.log(`listen`) })
 
 // PING BOT ----
