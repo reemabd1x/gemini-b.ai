@@ -10,6 +10,6 @@ export const generationConfig = {
     temperature: 1,
     topP: 0.95,
     topK: 40,
-    maxOutputTokens: 4000,
+    maxOutputTokens: 3000,
     responseMimeType: "text/plain",
 };
