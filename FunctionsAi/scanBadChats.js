@@ -15,5 +15,6 @@ export const scanBadChats = async (text, file) => {
     } catch (err) { console.log(err); return 'false' }
 };
 
-const directions = `You will act as an inspector for harmful messages, such as insults, political topics, and especially ISIS-related content. A text message may be sent to you, possibly accompanied by an image. Review it to see if there is any harmful content. If there is, write "true"; if there isn't, write "false".`
+const directions = `You will act as an inspector for harmful messages, such as political topics, especially anything related to ISIS. You will receive a text message, and there may be an image included. Review the content; if there is something harmful, write "true" and if there is not, write "false".`
+// const directions = `You will act as an inspector for harmful messages, such as insults, political topics, and especially ISIS-related content. A text message may be sent to you, possibly accompanied by an image. Review it to see if there is any harmful content. If there is, write "true"; if there isn't, write "false".`
 // const directions = `You will act as an inspector for harmful messages such as insults, abuse, disrespect to others, mockery, incitement to hatred, and belittling others, Open topics related to politics or terrorism, such as ISIS. You will be sent a text message and possibly an image. Examine if there is anything harmful. If there is, write "true", otherwise write "false".`
