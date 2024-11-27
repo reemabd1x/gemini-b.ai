@@ -138,7 +138,7 @@ bot.on('message', async (ctx) => {
             }
             
         } else {
-            const result = await scanBadChats(ctx.text);
+            const result = await scanBadChats(ctx?.text || ctx?.caption);
             // console.log(result);
             if(result === 'true') {
                 await bot.deleteMessage(ctx.chat.id, ctx.message_id)
