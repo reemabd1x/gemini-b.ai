@@ -125,6 +125,7 @@ bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
 // // SCAN BAD CHATS
 bot.on('message', async (ctx) => {
     try {
+        return;
         if (ctx.chat.type !== 'supergroup') return;
         // console.log(ctx);
         if (ctx?.photo) {
