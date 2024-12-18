@@ -5,7 +5,7 @@ dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.KEY_XAZTOM);
 export const scanBadChats = async (text, file) => {
     console.log('run scan', text);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002", systemInstruction: directions, safetySettings })
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp", systemInstruction: directions, safetySettings })
     try {
         const chat = model.startChat({ generationConfig })
         const result = file ? await chat.sendMessage([file, text]) : await chat.sendMessage(text)
