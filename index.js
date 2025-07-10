@@ -123,7 +123,7 @@ bot.onText(commands[0].regexp, async (ctx) => { //command xaztom
 })
 
 // // SCAN BAD CHATS
-/*
+
 bot.on('message', async (ctx) => {
     try {
        
@@ -149,7 +149,7 @@ bot.on('message', async (ctx) => {
         }
     } catch (err) { console.log(err) }
 })
-*/
+
 
 const sendError = (id) => {
     const errorMessages = [
