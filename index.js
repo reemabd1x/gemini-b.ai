@@ -79,7 +79,7 @@ bot.on('text', async (ctx) => {
 bot.onText(/\/start/, async (ctx) => { //command start
     try {
         // console.log('regx start', ctx);
-        const result = await runChat('How can I benefit from you?', ctx.from?.first_name || 'brother');
+        const result = await runChat('كيف يمكنني الاستفادة منك؟', ctx.from?.first_name || 'brother');
         bot.sendMessage(ctx.chat.id, result, {
             parse_mode: 'Markdown',
             'reply_markup': { "inline_keyboard": [[{ text: "to bot", url: "https://t.me/xaztom_bot" }]] }
@@ -175,3 +175,4 @@ setInterval(async () => {
 
 bot.setMyCommands(commands)
 app.listen(3000, () => { console.log('listen this bot in messages...') });
+
