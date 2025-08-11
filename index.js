@@ -16,7 +16,7 @@ bot.on('text', async (ctx) => {
         if (ctx.reply_to_message) return
         if (await chatMember(bot, ctx.from.id)) return
         const result = await runChat(ctx.text, ctx.from?.first_name || 'brother');
-        bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) })
+        bot.sendMessage(ctx.chat.id, result, { parse_mode: 'Markdown' }).catch(() => { bot.sendMessage(ctx.chat.id, result) }).catch(() => { bot.sendMessage(ctx.chat.id, "رد طويل جداً يجب الانتظار حتى ينتهي المطور من خل المشكلة") })
     } catch (err) { console.log(err), sendError(ctx.chat.id) }
 });
 bot.on('document', async (ctx) => {
@@ -175,4 +175,5 @@ setInterval(async () => {
 
 bot.setMyCommands(commands)
 app.listen(3000, () => { console.log('listen this bot in messages...') });
+
 
